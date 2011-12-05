@@ -1,5 +1,6 @@
 *~
+*.hi
+*.o
 .libs/*
-*.la
-*.lo
-*.slo
+*_stub.c
+*_stub.h
