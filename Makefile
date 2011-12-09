@@ -2,7 +2,7 @@ GHC_LIBS = $(shell ghc --print-libdir)
 
 mod_wai: mod_wai.c Apache/Wai.hs
 	# Just for the sake of generating the stub.h
-	ghc -Wall Apache/Wai.hs
+	ghc -c -Wall Apache/Wai.hs -XForeignFunctionInterface
 	# Link against the apache runtime!
 	gcc -c -I/usr/include/apache2 -I/usr/include/apr-1.0 -I$(GHC_LIBS)/include -IApache/ -Wall mod_wai.c -lapr-1 -o mod_wai.o
 	# * Allow GHC to build the shared library because ??? it is supposedly good for you

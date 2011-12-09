@@ -19,18 +19,17 @@ __attribute__((constructor)) void init(void) {
 
 
 static int wai_handler(request_rec *r) {
-  // should be checking r->handler
   if (!r->header_only) {
-    int number = 39;
-    char buf[256];
-    snprintf(buf, sizeof(buf), "haskell here: %i + 3 = %i\n", number, (int)hs_add_3(number));
-    ap_rputs(buf, r);
+    char buf[4096];
+    // (need to run this until WAI sez: "NO MORE!")
+    wai_adapter(buf, sizeof(buf), r->method, 1, 2);
+    ap_rputsn(buf, n, r);
   }
   return OK;
 }
 
 static void wai_register_hooks(apr_pool_t *p) {
-  ap_hook_handler(wai_handler, NULL, NULL, APR_HOOK_MIDDLE);
+  ap_hook_handler(wai_handler, NULL, NULL, APR_HOOK_MIDDLE);  
 }
 
 module AP_MODULE_DECLARE_DATA wai_module = {
