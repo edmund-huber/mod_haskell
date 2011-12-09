@@ -4,3 +4,4 @@
 .libs/*
 *_stub.c
 *_stub.h
+mod_wai.so
