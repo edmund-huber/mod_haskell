@@ -37,7 +37,7 @@ feedApacheRequestToApplication cServerName cServerPort cClientHost cClientPort c
             },
           Wai.rawPathInfo = fullPath,
           Wai.rawQueryString = case B8.split '?' fullPath of
-            _:qs -> B8.concat qs
+            _:parts@(_:qs) -> B8.concat $ ["?"] ++ parts
             _ -> B8.empty,
           Wai.serverName = serverName,
           Wai.serverPort = fromIntegral cServerPort,
@@ -54,7 +54,7 @@ feedApacheRequestToApplication cServerName cServerPort cClientHost cClientPort c
         Wai.ResponseBuilder status headers builder -> do
           -- some headers go into the list of headers, others are special
           mapM_ (\(k, v) -> let
-                    unfoldedK = CI.foldedCase k :: ByteString
+                    unfoldedK = CI.foldedCase k
                     in case unfoldedK of
                       "content-type" -> withArray0 0 (B.unpack v) (\p_v -> set_content_type apacheRequest p_v)
                       _ -> withArray0 0 (B.unpack unfoldedK) (\p_k ->

@@ -25,7 +25,7 @@ void set_content_type(request_rec *r, char *content_type) {
       r->content_type = (*p)->content_type;
       return;
     } else {
-      p = &((*p)->next);
+      p = (content_type_list_t **)&((*p)->next);
     }
   }
   *p = malloc(sizeof(content_type_list_t));
@@ -43,7 +43,16 @@ __attribute__((constructor)) void init(void) {
 
 static int wai_handler(request_rec *r) {
   // how to communicate r->header_only ?
-  feedApacheRequestToApplication("apache", 80, r->connection->remote_addr->sa.sin.sin_addr.s_addr, 80, "GET", 1, 1, "/herpty/derp", r, r->headers_out);
+  feedApacheRequestToApplication(r->hostname,
+				 r->server->port,
+				 r->connection->remote_addr->sa.sin.sin_addr.s_addr,
+				 ntohs(r->connection->remote_addr->sa.sin.sin_port),
+				 r->method,
+				 r->proto_num / 1000,
+				 r->proto_num % 1000,
+				 r->unparsed_uri,
+				 r,
+				 r->headers_out);
   return OK;
 }
 
