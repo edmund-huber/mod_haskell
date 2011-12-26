@@ -1,13 +1,17 @@
-GHC_LIBS = $(shell ghc --print-libdir)
+GHC_LIBS=$(shell ghc --print-libdir)
+GHC_OPTS=-Wall -fforce-recomp -dynamic
 
-mod_wai: mod_wai.c Apache/Wai.hs
+mod_wai: mod_wai.c Apache/Wai.hs Dummy.hi
 	# Just for the sake of generating the stub.h
-	ghc -c -Wall Apache/Wai.hs -XForeignFunctionInterface
+	ghc -c $(GHC_OPTS) Apache/Wai.hs -XForeignFunctionInterface
 	# Link against the apache runtime!
 	gcc -c -I/usr/include/apache2 -I/usr/include/apr-1.0 -I$(GHC_LIBS)/include -IApache/ -Wall mod_wai.c -lapr-1 -o mod_wai.o
 	# * Allow GHC to build the shared library because ??? it is supposedly good for you
 	# * Include '-lm -lrt' because the GHC runtime expects them to be there
-	ghc -Wall -shared -dynamic -fPIC Apache/Wai.hs mod_wai.o -lm -lrt -lffi -L$(GHC_LIBS) -lHSrts -o mod_wai.so
+	ghc $(GHC_OPTS) -shared -dynamic -fPIC Apache/Wai.hs mod_wai.o -lm -lrt -lffi -L$(GHC_LIBS) -lHSrts -o mod_wai.so
+
+Dummy.hi: Dummy.hs
+	ghc -c $(GHC_OPTS) Dummy.hs
 
 install: mod_wai
 	cp mod_wai.so /usr/lib/apache2/modules
