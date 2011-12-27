@@ -42,7 +42,6 @@ __attribute__((constructor)) void init(void) {
 }
 
 static int wai_handler(request_rec *r) {
-  // how to communicate r->header_only ?
   feedApacheRequestToApplication(r->hostname,
 				 r->server->port,
 				 r->connection->remote_addr->sa.sin.sin_addr.s_addr,
@@ -52,6 +51,7 @@ static int wai_handler(request_rec *r) {
 				 r->proto_num % 1000,
 				 r->unparsed_uri,
 				 r,
+				 apr_table_elts(r->headers_in),
 				 r->headers_out);
   return OK;
 }

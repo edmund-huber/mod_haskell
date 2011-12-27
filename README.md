@@ -7,8 +7,6 @@ Haskell, implementing the "Web Application Interface" (WAI) standard.
 For more information on WAI, see:
 
   * http://www.haskell.org/haskellwiki/WebApplicationInterface
-  * http://hackage.haskell.org/packages/archive/wai/0.0.0/doc/html/Network-Wai.html
+  * http://hackage.haskell.org/packages/archive/wai/latest/doc/html/Network-Wai.html
 
-How can I make a web application using mod_wai?
------------------------------------------------
 

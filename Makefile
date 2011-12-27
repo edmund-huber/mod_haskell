@@ -1,7 +1,7 @@
 GHC_LIBS=$(shell ghc --print-libdir)
 GHC_OPTS=-Wall -fforce-recomp -dynamic
 
-mod_wai: mod_wai.c Apache/Wai.hs Dummy.hi
+mod_wai: mod_wai.c Apache/Wai.hs Apr/Tables.hi Dummy.hi
 	# Just for the sake of generating the stub.h
 	ghc -c $(GHC_OPTS) Apache/Wai.hs -XForeignFunctionInterface
 	# Link against the apache runtime!
@@ -12,6 +12,12 @@ mod_wai: mod_wai.c Apache/Wai.hs Dummy.hi
 
 Dummy.hi: Dummy.hs
 	ghc -c $(GHC_OPTS) Dummy.hs
+
+Apr/Tables.hi: Apr/Tables.hs
+	ghc -c $(GHC_OPTS) Apr/Tables.hs
+
+Apr/Tables.hs: Apr/Tables.hsc
+	hsc2hs --cc=gcc --cflag="$$(apr-config --cppflags --cflags) -I$(GHC_LIBS)/include" Apr/Tables.hsc
 
 install: mod_wai
 	cp mod_wai.so /usr/lib/apache2/modules
