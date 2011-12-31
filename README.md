@@ -5,8 +5,11 @@ A mod_so -style Apache module for building web applications in
 Haskell.
 
 Implements these interfaces to Haskell code:
+
   * WAI
+
     * http://www.haskell.org/haskellwiki/WebApplicationInterface
+
     * http://hackage.haskell.org/packages/archive/wai/latest/doc/html/Network-Wai.html
 
 How do I use it?
