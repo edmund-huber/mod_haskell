@@ -1,5 +1,5 @@
-What is mod_wai?
-----------------
+What is mod_haskell?
+--------------------
 
 A mod_so -style Apache module for building web applications in
 Haskell.
