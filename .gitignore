@@ -4,7 +4,7 @@
 .libs/*
 *_stub.c
 *_stub.h
-mod_wai.so
+mod_haskell.so
 Apache/Request.hs
 Apr/Network/IO.hs
 Apr/Tables.hs
