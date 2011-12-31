@@ -42,17 +42,7 @@ __attribute__((constructor)) void init(void) {
 }
 
 static int wai_handler(request_rec *r) {
-  feedApacheRequestToApplication(r->hostname,
-				 r->server->port,
-				 r->connection->remote_addr->sa.sin.sin_addr.s_addr,
-				 ntohs(r->connection->remote_addr->sa.sin.sin_port),
-				 r->method,
-				 r->proto_num / 1000,
-				 r->proto_num % 1000,
-				 r->unparsed_uri,
-				 r,
-				 apr_table_elts(r->headers_in),
-				 r->headers_out);
+  feedApacheRequestToApplication(r);
   return OK;
 }
 
@@ -62,10 +52,10 @@ static void wai_register_hooks(apr_pool_t *p) {
 
 module AP_MODULE_DECLARE_DATA wai_module = {
   STANDARD20_MODULE_STUFF, 
-  NULL,                  /* create per-dir    config structures */
-  NULL,                  /* merge  per-dir    config structures */
-  NULL,                  /* create per-server config structures */
-  NULL,                  /* merge  per-server config structures */
-  NULL,                  /* table of config file commands */
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
   wai_register_hooks
 };

@@ -5,4 +5,7 @@
 *_stub.c
 *_stub.h
 mod_wai.so
+Apache/Request.hs
+Apr/Network/IO.hs
 Apr/Tables.hs
+Apr/Uri.hs

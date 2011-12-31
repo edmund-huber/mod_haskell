@@ -1,9 +1,10 @@
-* test that a out-of-the-box yesod app works under mod_wai
 * find what is the actual expected lifetime of a content_type,
   or convert that singly linked list to use apr_table
-* don't always return OK
-* request_rec::err_headers_out?
-* error document when catch toplevel exception?
-* what other response headers need to go into special variables?
-* r->header_only? (HEAD)?
+* dont always return OK? better than raising error
+* redirects, and request_rec::err_headers_out?
 * figure out isSecure
+
+this version
+* separate out Apache glue and Wai glue, have datatype:
+    data HaskellApp = WaiApp Wai.Application | HackApp Hack.Whatever | RawApp ApacheApp
+* make -> cabal

@@ -10,9 +10,7 @@ import Foreign.Storable
 
 #include <apr-1.0/apr_tables.h>
 
-data AprTableHeader = AprTableHeader {
-  -- The pool the array is allocated out of
-  -- pool :: Ptr a,
+data Header = Header {
   -- The amount of memory allocated for each element of the array
   eltSize :: CInt,
   -- The number of active elements in the array
@@ -20,19 +18,17 @@ data AprTableHeader = AprTableHeader {
   -- The number of elements allocated in the array
   nAlloc :: CInt,
   -- The elements in the array
-  elts :: Ptr AprTableEntry
+  elts :: Ptr Entry
 }
 
-data AprTableEntry = AprTableEntry {
+data Entry = Entry {
   -- The key for the current table entry (maybe NULL)
   key :: Ptr CChar,
   -- The value for the current table entry
   val :: Ptr CChar
-  -- A checksum for the key, for use by the apr_table internals
-  -- keyChecksum :: Word32
 }
 
-instance Storable AprTableHeader where
+instance Storable Header where
   sizeOf _ = (#size apr_array_header_t)
   alignment _ = alignment (undefined :: CInt)
   peek ptr = do
@@ -40,34 +36,34 @@ instance Storable AprTableHeader where
     nElts <- (#peek apr_array_header_t, nelts) ptr
     nAlloc <- (#peek apr_array_header_t, nalloc) ptr
     elts <- (#peek apr_array_header_t, elts) ptr
-    return $ AprTableHeader eltSize nElts nAlloc elts
-  poke ptr (AprTableHeader a b c d) = do
+    return $ Header eltSize nElts nAlloc elts
+  poke ptr (Header a b c d) = do
     (#poke apr_array_header_t, elt_size) ptr a
     (#poke apr_array_header_t, nelts) ptr b
     (#poke apr_array_header_t, nalloc) ptr c
     (#poke apr_array_header_t, elts) ptr d
 
-instance Storable AprTableEntry where
+instance Storable Entry where
   sizeOf _ = (#size apr_table_entry_t)
   alignment _ = alignment (undefined :: CInt)
   peek ptr = do
     key <- (#peek apr_table_entry_t, key) ptr
     val <- (#peek apr_table_entry_t, val) ptr
-    return $ AprTableEntry key val
-  poke ptr (AprTableEntry a b) = do
+    return $ Entry key val
+  poke ptr (Entry a b) = do
     (#poke apr_table_entry_t, key) ptr a
     (#poke apr_table_entry_t, val) ptr b
 
-fromAprTable :: Ptr AprTableHeader -> IO [([Char], [Char])]
+fromAprTable :: Ptr Header -> IO [([Char], [Char])]
 fromAprTable ptr =
   do
-    AprTableHeader {nElts=nElts, elts=ptrElts} <- peek ptr
+    Header {nElts=nElts, elts=ptrElts} <- peek ptr
     let nElems = fromIntegral nElts
     let
       makeList :: Int -> IO [([Char], [Char])]
       makeList 0 = do return []
       makeList n = do
-          AprTableEntry {key=k, val=v} <- peekElemOff ptrElts $ nElems - n
+          Entry {key=k, val=v} <- peekElemOff ptrElts $ nElems - n
           kString <- peekCString k
           vString <- peekCString v
           kvs <- makeList $ n - 1

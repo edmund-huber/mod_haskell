@@ -1,7 +1,7 @@
 GHC_LIBS=$(shell ghc --print-libdir)
 GHC_OPTS=-Wall -fforce-recomp -dynamic
 
-mod_wai: mod_wai.c Apache/Wai.hs Apr/Tables.hi Dummy.hi
+mod_wai: mod_wai.c Apache/Wai.hs Apache/Request.hi Apr/Tables.hi Apr/Uri.hi Dummy.hi
 	# Just for the sake of generating the stub.h
 	ghc -c $(GHC_OPTS) Apache/Wai.hs -XForeignFunctionInterface
 	# Link against the apache runtime!
@@ -13,11 +13,29 @@ mod_wai: mod_wai.c Apache/Wai.hs Apr/Tables.hi Dummy.hi
 Dummy.hi: Dummy.hs
 	ghc -c $(GHC_OPTS) Dummy.hs
 
+Apr/Network/IO.hi: Apr/Network/IO.hs
+	ghc -c $(GHC_OPTS) Apr/Network/IO.hs
+
+Apr/Network/IO.hs: Apr/Network/IO.hsc
+	hsc2hs --cc=gcc --cflag="$$(apr-config --cppflags --cflags) -I$(GHC_LIBS)/include" Apr/Network/IO.hsc
+
 Apr/Tables.hi: Apr/Tables.hs
 	ghc -c $(GHC_OPTS) Apr/Tables.hs
 
 Apr/Tables.hs: Apr/Tables.hsc
 	hsc2hs --cc=gcc --cflag="$$(apr-config --cppflags --cflags) -I$(GHC_LIBS)/include" Apr/Tables.hsc
+
+Apr/Uri.hi: Apr/Uri.hs
+	ghc -c $(GHC_OPTS) Apr/Uri.hs
+
+Apr/Uri.hs: Apr/Uri.hsc
+	hsc2hs --cc=gcc --cflag="$$(apr-config --cppflags --cflags) -I$(GHC_LIBS)/include" Apr/Uri.hsc
+
+Apache/Request.hi: Apache/Request.hs Apr/Uri.hi Apr/Network/IO.hi
+	ghc -c $(GHC_OPTS) Apache/Request.hs
+
+Apache/Request.hs: Apache/Request.hsc
+	hsc2hs --cc=gcc --cflag="$$(apr-config --cppflags --cflags) -I$(GHC_LIBS)/include -I/usr/include/apr-1.0" Apache/Request.hsc
 
 install: mod_wai
 	cp mod_wai.so /usr/lib/apache2/modules
