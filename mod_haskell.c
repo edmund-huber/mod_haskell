@@ -4,9 +4,9 @@
 #include <ap_config.h>
 #include <HsFFI.h>
 
-#include <Wai_stub.h>
+#include <Glue_stub.h>
 
-extern void __stginit_ApacheziWai(void);
+extern void __stginit_ApacheziGlue(void);
 
 // so it's not clear when I can deallocate the content_type .. so I
 // guess I won't
@@ -35,27 +35,27 @@ void set_content_type(request_rec *r, char *content_type) {
 __attribute__((constructor)) void init(void) {
   // initialize the Haskell runtime library
   int argc = 1;
-  char *name = "mod_wai";
+  char *name = "mod_haskell";
   char **argv = &name;
   hs_init(&argc, &argv);
-  hs_add_root(__stginit_ApacheziWai);
+  hs_add_root(__stginit_ApacheziGlue);
 }
 
-static int wai_handler(request_rec *r) {
+static int haskell_handler(request_rec *r) {
   feedApacheRequestToApplication(r);
   return OK;
 }
 
-static void wai_register_hooks(apr_pool_t *p) {
-  ap_hook_handler(wai_handler, NULL, NULL, APR_HOOK_MIDDLE);  
+static void haskell_register_hooks(apr_pool_t *p) {
+  ap_hook_handler(haskell_handler, NULL, NULL, APR_HOOK_MIDDLE);  
 }
 
-module AP_MODULE_DECLARE_DATA wai_module = {
+module AP_MODULE_DECLARE_DATA haskell_module = {
   STANDARD20_MODULE_STUFF, 
   NULL,
   NULL,
   NULL,
   NULL,
   NULL,
-  wai_register_hooks
+  haskell_register_hooks
 };
