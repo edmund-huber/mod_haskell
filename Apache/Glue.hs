@@ -1,6 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface, OverloadedStrings #-}
 
-module Apache.Wai where
+module Apache.Glue where
 
 import qualified Apache.Request
 import qualified Apr.Network.IO
@@ -88,6 +88,6 @@ feedApacheRequestToApplication ptr =
 
 foreign import ccall "/usr/include/apr-1.0/apr_tables.h apr_table_add" apr_table_add :: Ptr a -> Ptr Word8 -> Ptr Word8 -> IO ()
 foreign import ccall "/usr/include/apache2/http_protocol.h ap_rputs" ap_rputs :: Ptr Word8 -> Ptr a -> IO ()
-foreign import ccall "mod_wai.c set_content_type" set_content_type :: Ptr a -> Ptr Word8 -> IO ()
+foreign import ccall "mod_haskell.c set_content_type" set_content_type :: Ptr a -> Ptr Word8 -> IO ()
 
 foreign export ccall feedApacheRequestToApplication :: Ptr Apache.Request.Request -> IO ()
